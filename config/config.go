@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	PrivateKey string
+	Port       string
 }
 
 func GetConfig() Config {
@@ -20,6 +21,7 @@ func GetConfig() Config {
 
 	var config Config = Config{
 		PrivateKey: os.Getenv("PRIVATE_KEY"),
+		Port:       os.Getenv("PORT"),
 	}
 
 	return config

@@ -2,11 +2,9 @@ package access
 
 import (
 	"fmt"
-	// "io/ioutil"
 	"log"
 	"net"
 
-	// "path/filepath"
 	"strings"
 
 	"main/config"
@@ -19,20 +17,9 @@ func acceptAnyHostKey(_ string, _ net.Addr, _ ssh.PublicKey) error {
 }
 
 func ConnectToServerWithPrivatePublicKeys(user string, host string, port string) {
-	// private key parsing logic
-	// exePath, err := os.Executable()
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// privateKeyFilePath := []string{filepath.Dir(exePath), "keys/private-key.txt"}
-
 	keys := config.GetConfig()
 
 	privateKeyBytes := []byte(keys.PrivateKey)
-
-	fmt.Println(keys.PrivateKey)
 
 	if privateKeyBytes == nil {
 		log.Fatal("Failed to load private key")
@@ -68,7 +55,7 @@ func ConnectToServerWithPrivatePublicKeys(user string, host string, port string)
 
 	defer session.Close()
 
-	output, err := session.CombinedOutput("pm2 status")
+	output, err := session.CombinedOutput("cd apps; ls; cd rua-api; git pull origin main")
 
 	if err != nil {
 		log.Fatal("Failed to run command: %s", err)
