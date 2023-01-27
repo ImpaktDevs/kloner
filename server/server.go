@@ -18,5 +18,7 @@ func StartServer() {
 		})
 	})
 
-	log.Fatal(app.Listen(strings.Join([]string{":", config.GetConfig().Port}, "")))
+	port := config.GetConfig().Port
+
+	log.Fatal(app.Listen(strings.Join([]string{":", port}, "")))
 }

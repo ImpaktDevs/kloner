@@ -19,9 +19,18 @@ func GetConfig() Config {
 		log.Fatal("Error reading .env file")
 	}
 
+	var port string
+	var isSet bool
+
+	port, isSet = os.LookupEnv("PORT")
+
+	if !isSet {
+		port = "3000"
+	}
+
 	var config Config = Config{
 		PrivateKey: os.Getenv("PRIVATE_KEY"),
-		Port:       os.Getenv("PORT"),
+		Port:       port,
 	}
 
 	return config
