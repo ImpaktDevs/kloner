@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -16,7 +16,7 @@ func GetConfig() Config {
 	err := godotenv.Load()
 
 	if err != nil {
-		fmt.Println("Error reading .env file")
+		log.Fatal("Error reading .env file: %s", err)
 	}
 
 	var port string

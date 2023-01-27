@@ -19,6 +19,8 @@ func acceptAnyHostKey(_ string, _ net.Addr, _ ssh.PublicKey) error {
 func ConnectToServerWithPrivatePublicKeys(user string, host string, port string) {
 	keys := config.GetConfig()
 
+	fmt.Println(keys.PrivateKey)
+
 	privateKeyBytes := []byte(keys.PrivateKey)
 
 	if privateKeyBytes == nil {
