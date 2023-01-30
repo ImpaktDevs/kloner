@@ -4,8 +4,10 @@ go 1.19
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/aymerick/raymond v2.0.2+incompatible // indirect
 	github.com/gofiber/fiber v1.14.6 // indirect
 	github.com/gofiber/fiber/v2 v2.41.0 // indirect
+	github.com/gofiber/template v1.7.4 // indirect
 	github.com/gofiber/utils v1.0.1 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
