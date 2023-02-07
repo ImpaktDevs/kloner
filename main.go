@@ -1,12 +1,17 @@
 package main
 
 import (
-	"main/access"
-	"main/server"
+	"log"
+	"os"
+
+	"main/cmd"
 )
 
 func main() {
-	access.ConnectToServerWithPrivatePublicKeys("tora", "18.185.110.231", "22")
+	app := cmd.Commands()
 
-	server.StartServer()
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
