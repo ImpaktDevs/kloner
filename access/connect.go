@@ -2,7 +2,6 @@ package access
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net"
@@ -10,6 +9,7 @@ import (
 
 	"strings"
 
+	"github.com/ttacon/chalk"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -17,32 +17,71 @@ func acceptAnyHostKey(_ string, _ net.Addr, _ ssh.PublicKey) error {
 	return nil
 }
 
-func ConnectToServerWithPrivatePublicKeys(user string, host string, port string, pkPath string, pkType string) {
-	data, err := ioutil.ReadFile(pkPath)
+const (
+	PasswordAuth = "password-auth"
+	KeyAuth      = "key-auth"
+)
 
-	if err != nil {
-		log.Fatal("Failed to load private key from file, please check file path")
+func ConnectToServerWithPrivatePublicKeys(user string, host string, port string, authType string, pkPath string, password string) {
+	if pkPath == "" && authType == "key-auth" {
+		log.Fatal(chalk.Red, "Please provide path to private key or change the authType to `password-auth`")
 	}
 
-	privateKeyBytes := []byte(string(data))
-
-	if privateKeyBytes == nil {
-		log.Fatal("Failed to load private key")
+	if password == "" && authType == "password-auth" {
+		log.Fatal(chalk.Red, "Please provide a password or change the authType to `key-auth`")
 	}
 
-	privateKey, err := ssh.ParsePrivateKey(privateKeyBytes)
+	var privateKey ssh.Signer
 
-	if err != nil {
-		log.Fatal("Failed to parse private key: %s", err)
+	if authType == "key-auth" {
+		data, err := ioutil.ReadFile(pkPath)
+		if err != nil {
+			log.Fatal(chalk.Red, "Failed to load private key from file, please check file path")
+		}
+
+		privateKeyBytes := []byte(string(data))
+
+		if privateKeyBytes == nil {
+			log.Fatal(chalk.Red, "Failed to load private key")
+		}
+
+		privateKey, err = ssh.ParsePrivateKey(privateKeyBytes)
+
+		if err != nil {
+			log.Fatal(chalk.Red, "Failed to parse private key: %s", err)
+		}
 	}
 
-	config := &ssh.ClientConfig{
+	userNamePrivateKeyClientConfig := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(privateKey),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         30 * time.Second,
+	}
+
+	userNamePasswordClientConfig := &ssh.ClientConfig{
+		User: user,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(password),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         30 * time.Second,
+	}
+
+	var config *ssh.ClientConfig
+
+	switch authType {
+	case PasswordAuth:
+		config = userNamePasswordClientConfig
+		break
+	case KeyAuth:
+		config = userNamePrivateKeyClientConfig
+		break
+	default:
+		config = userNamePasswordClientConfig
+		break
 	}
 
 	client, err := ssh.Dial("tcp", strings.Join([]string{host, port}, ":"), config)
@@ -85,8 +124,8 @@ func ConnectToServerWithPrivatePublicKeys(user string, host string, port string,
 	session.Stdout = &b
 
 	if err := session.Run("git version"); err != nil {
-		log.Fatal("Failed to run command: %v", err)
+		log.Fatal(chalk.Red, "Failed to run command: %v", err)
 	}
 
-	fmt.Println(string(b.String()))
+	log.Println(chalk.Green, string(b.String()))
 }

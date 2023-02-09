@@ -20,8 +20,9 @@ func Commands() *cli.App {
 						c.String("user"),
 						c.String("host"),
 						c.String("port"),
+						c.String("authType"),
 						c.String("pKey"),
-						c.String("type"),
+						c.String("password"),
 					)
 					return nil
 				},
@@ -45,8 +46,12 @@ func Commands() *cli.App {
 						Usage: "your access port or just 22 if no custom port",
 					},
 					&cli.StringFlag{
-						Name:  "type",
-						Usage: "private key type e.g. pem, putty or rsa",
+						Name:  "authType",
+						Usage: "",
+					},
+					&cli.StringFlag{
+						Name:  "password",
+						Usage: "",
 					},
 				},
 			},
