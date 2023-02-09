@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: latest
+
+    - name: Build binary
+      run: |
+        go build main.go
+
+    - name: Publish Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ env.UPLOAD_URL }}
+        asset_path: main
+        asset_name: main-${{ env.TAG_NAME }}.tar.gz
+        tag_name: ${{ env.TAG_NAME }}
