@@ -55,6 +55,23 @@ func Commands() *cli.App {
 					},
 				},
 			},
+			{
+				Name:    "workflow",
+				Aliases: []string{"w"},
+				Usage:   "use workflow file to perfoma actions on server",
+				Action: func(c *cli.Context) error {
+					access.HandleWorkflowInServer(c.String("path"))
+					return nil
+				},
+				ArgsUsage:   ` `,
+				Description: `House steps/actions kloner should take to perform actions in your server`,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "path",
+						Usage: "path to your workflow file",
+					},
+				},
+			},
 		},
 	}
 

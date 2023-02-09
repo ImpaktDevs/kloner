@@ -1,0 +1,26 @@
+{
+    "server_info": {
+        "user": "ubuntu",
+        "host": "10.244.119.135",
+        "port": "22",
+        "private_key_path": "/Users/wchr/.ssh/rh-cms-sandbox.pem",
+        "password": "",
+        "auth_type": "key-auth"
+    },
+    "steps": [
+        {
+            "description": "Get git version",
+            "commands": [
+                "git version",
+                "cat /etc/systemd/system/harness-server.service"
+            ]
+        },
+        {
+            "description": "Get git version",
+            "commands": [
+                "git version",
+                "cat /etc/systemd/system/harness-server.service"
+            ]
+        }
+    ]
+}
