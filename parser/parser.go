@@ -18,14 +18,16 @@ type AuthenticateData struct {
 	AuthType       string `json:"auth_type"`
 }
 
-type Step struct {
+type Process struct {
 	Description string   `json:"description"`
 	Commands    []string `json:"commands"`
 }
 
 type Workflow struct {
-	ServerInfo AuthenticateData `json:"server_info"`
-	Steps      []Step           `json:"steps"`
+	ServerInfo  AuthenticateData     `json:"server_info"`
+	PreProcess  []Process            `json:"pre_process"`
+	Targets     map[string][]Process `json:"targets"`
+	PostProcess []Process            `json:"post_process"`
 }
 
 func checkFileExists(path string) {

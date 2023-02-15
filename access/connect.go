@@ -128,7 +128,34 @@ func ConnectToServerWithPrivatePublicKeys(user string, host string, port string,
 	return session
 }
 
-func HandleWorkflowInServer(path string) {
+func runSteps(step parser.Process, client *ssh.Client, info []string, errors []string, successes []string) {
+	log.Println(chalk.Magenta, strings.Join([]string{":::::", step.Description, ":::::"}, ""), chalk.Reset)
+	info = append(info, strings.Join([]string{":::::", step.Description, ":::::"}, ""))
+	for _, item := range step.Commands {
+		session, err := client.NewSession()
+
+		defer session.Close()
+
+		if err != nil {
+			log.Fatalf("Failed to create session: %s", err)
+		}
+		var b bytes.Buffer
+
+		session.Stdout = &b
+		log.Println(chalk.Green, strings.Join([]string{">", item}, " "), chalk.Reset)
+		if err := session.Run(item); err != nil {
+			log.Println(chalk.Red, strings.Join([]string{err.Error()}, ": "), chalk.Reset)
+			errors = append(errors, strings.Join([]string{err.Error()}, ": "))
+		} else {
+			log.Println(strings.Join([]string{b.String()}, ": "))
+			successes = append(successes, strings.Join([]string{b.String()}, ": "))
+			b.Reset()
+		}
+
+	}
+}
+
+func HandleWorkflowInServer(path string, target string) {
 	workflow := parser.ParseWorkflowFile(path)
 
 	user, host, port, authType, pkPath, password := workflow.ServerInfo.User, workflow.ServerInfo.Host, workflow.ServerInfo.Port, workflow.ServerInfo.AuthType, workflow.ServerInfo.PrivateKeyPath, workflow.ServerInfo.Password
@@ -225,30 +252,31 @@ func HandleWorkflowInServer(path string) {
 	successes := []string{}
 	info := []string{}
 
-	for _, step := range workflow.Steps {
-		log.Println(chalk.Magenta, strings.Join([]string{":::::", step.Description, ":::::"}, ""), chalk.Reset)
-		info = append(info, strings.Join([]string{":::::", step.Description, ":::::"}, ""))
-		for _, item := range step.Commands {
-			session, err := client.NewSession()
+	targetValue, exists := workflow.Targets[target]
+	if !exists || target == "" {
+		log.Fatal(chalk.Red, "No target picked", chalk.Reset)
+	}
 
-			defer session.Close()
-
-			if err != nil {
-				log.Fatalf("Failed to create session: %s", err)
-			}
-			var b bytes.Buffer
-
-			session.Stdout = &b
-			log.Println(chalk.Green, strings.Join([]string{">", item}, " "), chalk.Reset)
-			if err := session.Run(item); err != nil {
-				log.Println(chalk.Red, strings.Join([]string{err.Error()}, ": "), chalk.Reset)
-				errors = append(errors, strings.Join([]string{err.Error()}, ": "))
-			} else {
-				log.Println(strings.Join([]string{b.String()}, ": "))
-				successes = append(successes, strings.Join([]string{b.String()}, ": "))
-				b.Reset()
-			}
-
+	log.Println(chalk.Magenta, strings.Join([]string{"::::: Running Pre process", ":::::"}, " "), chalk.Reset)
+	if len(workflow.PreProcess) > 0 {
+		for _, step := range workflow.PreProcess {
+			runSteps(step, client, info, errors, successes)
 		}
+	} else {
+		log.Println(chalk.Blue, "No pre process commands", chalk.Reset)
+	}
+
+	log.Println(chalk.Magenta, strings.Join([]string{"::::: Running target", target, ":::::"}, " "), chalk.Reset)
+	for _, step := range targetValue {
+		runSteps(step, client, info, errors, successes)
+	}
+
+	log.Println(chalk.Magenta, strings.Join([]string{"::::: Running Post process", ":::::"}, " "), chalk.Reset)
+	if len(workflow.PostProcess) > 0 {
+		for _, step := range workflow.PostProcess {
+			runSteps(step, client, info, errors, successes)
+		}
+	} else {
+		log.Println(chalk.Blue, "No post process commands", chalk.Reset)
 	}
 }

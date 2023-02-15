@@ -60,7 +60,7 @@ func Commands() *cli.App {
 				Aliases: []string{"w"},
 				Usage:   "use workflow file to perfoma actions on server",
 				Action: func(c *cli.Context) error {
-					access.HandleWorkflowInServer(c.String("path"))
+					access.HandleWorkflowInServer(c.String("path"), c.String("target"))
 					return nil
 				},
 				ArgsUsage:   ` `,
@@ -69,6 +69,10 @@ func Commands() *cli.App {
 					&cli.StringFlag{
 						Name:  "path",
 						Usage: "path to your workflow file",
+					},
+					&cli.StringFlag{
+						Name:  "target",
+						Usage: "Which target in kloner file do you want to run",
 					},
 				},
 			},

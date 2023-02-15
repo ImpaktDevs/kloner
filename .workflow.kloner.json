@@ -7,20 +7,20 @@
         "password": "",
         "auth_type": "key-auth"
     },
-    "steps": [
-        {
-            "description": "Get git version",
-            "commands": [
-                "git version",
-                "cat /etc/systemd/system/harness-server.service"
-            ]
-        },
-        {
-            "description": "Get git version",
-            "commands": [
-                "git version",
-                "cat /etc/systemd/system/harness-server.service"
-            ]
-        }
+    "pre_process": [
+        
+    ],
+    "targets": {
+        "deploy": [
+            {
+                "description": "Get git version",
+                "commands": [
+                    "git version"
+                ]
+            }
+        ]
+    },
+    "post_process": [
+        
     ]
 }
