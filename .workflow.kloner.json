@@ -1,11 +1,11 @@
 {
     "server_info": {
-        "user": "ubuntu",
-        "host": "10.244.119.135",
-        "port": "22",
-        "private_key_path": "/Users/wchr/.ssh/rh-cms-sandbox.pem",
+        "user": "<server_username>",
+        "host": "<server_host_ip>",
+        "port": "<server_port>",
+        "private_key_path": "<path_to_private_key>",
         "password": "",
-        "auth_type": "key-auth"
+        "auth_type": "<key-auth/password-auth>"
     },
     "pre_process": [
         
@@ -13,9 +13,9 @@
     "targets": {
         "deploy": [
             {
-                "description": "Get git version",
+                "description": "<description_for_command>",
                 "commands": [
-                    "git version"
+                    "<commands_in_array>"
                 ]
             }
         ]
