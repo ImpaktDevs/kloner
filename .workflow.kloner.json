@@ -8,7 +8,7 @@
         "auth_type": "<key-auth/password-auth>"
     },
     "pre_process": [
-        
+        // commands to run before a target
     ],
     "targets": {
         "deploy": [
@@ -21,6 +21,6 @@
         ]
     },
     "post_process": [
-        
+        // commands to run after a target
     ]
 }
